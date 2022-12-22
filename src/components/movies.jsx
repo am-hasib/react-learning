@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
+import { paginate } from "../utils/paginate";
 import Like from "./common/like";
+import Pagination from "./common/pagination";
 
 export default class Movies extends Component {
   state = {
@@ -20,12 +22,14 @@ export default class Movies extends Component {
     movies[index].liked = !movies[index].liked;
     this.setState({ movies });
   };
-
+  handlePage = (page) => {
+    this.setState({ currentPage: page });
+  };
   render() {
-    const { movies, currentPage, pageSize } = this.state;
+    const { movies: allMovies, currentPage, pageSize } = this.state;
     let count = this.state.movies.length;
     if (count === 0) return <p>There is no Movies in the database</p>;
-
+    const movies = paginate(allMovies, pageSize, currentPage);
     console.log(movies);
     return (
       <div className="mt-3">
@@ -68,6 +72,12 @@ export default class Movies extends Component {
             ))}
           </tbody>
         </table>
+        <Pagination
+          itemsCount={count}
+          pageSize={pageSize}
+          currentPage={currentPage}
+          onPageChange={this.handlePage}
+        />
       </div>
     );
   }
